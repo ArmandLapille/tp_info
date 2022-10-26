@@ -43,8 +43,31 @@ void arbre_de_Huffman(void){
 	//tri de l'arbre
 	tri_de_Arbre(arbreHuffman,taille);
 	printf("///////////////////////////////////////////////////////////////////////// \n");
-	printf("Arbre trier \n");
+	printf("Arbre trié \n");
 	afficheArbre(arbreHuffman,taille);
+
+	printf("///////////////////////////////////////////////////////////////////////// \n");
+	printf("Création de la racine \n");
+	cree_racine(arbreHuffman, taille, racine);
+	racine = arbreHuffman[0];
+
+	printf("///////////////////////////////////////////////////////////////////////// \n");
+	printf("On parcourt l'arbre \n");
+	parcourirArbre(racine);
+
+	printf("///////////////////////////////////////////////////////////////////////// \n");
+	printf("caractère en binaire : \n");
+	creerCode(racine, code, tailleCode);
+
+	printf("///////////////////////////////////////////////////////////////////////// \n");
+	printf("compression de l'arbre \n");
+	compression(texteCompress, racine, texte);
+
+	/*
+	printf("///////////////////////////////////////////////////////////////////////// \n");
+	printf("On créé l'entête \n");
+	entete = creerentete(texte, texteCompress);
+	*/
 }
 
 //Fonction qui crée & initie les feuille d'un arbre à partir du texte
@@ -134,6 +157,7 @@ void cree_racine(struct Noeud* arbre[256], uint32_t taille,struct Noeud* racine)
 	uint8_t i = taille;
 	while(i != 1){
 		triArbre(arbre,taille);
+		printf("///////////////////////////////////////////////////////////////////////// \n");
 		afficheArbre(arbreHuffman,taille);
 		noeud = arbre[0];
 		noeud1 = arbre[1];
@@ -214,18 +238,25 @@ struct Entete* creeentete(uint8_t *texte, uint8_t texteCompress[TAILLE_MAX_COMPR
 	return entete;
 }
 
-void compression(uint8_t texteCompress[TAILLE_MAX_COMPRESS],struct Noeud* racine,uint8_t texte[taille]){
+void compression(uint8_t texteCompress[TAILLE_MAX_COMPRESS],struct Noeud* racine,uint8_t texte[10]){
 	uint8_t k=0,v=0;
-		for(int i=0;i<taille;i++){
+	int f=0,BIT=7;
+		for(int i=0;i<strlen(texte);i++){
 			noeud_test = getAdress(racine,texte[i]);
-
 			v=0;
 			for(int j=(noeud_test->tailleCode+k);j>k;j--){
-				texteCompress[j] = READ_BIT(noeud_test->code,v);
-				printf("%d\r",texteCompress[j]);
+				texteCompress[f] |= (READ_BIT(noeud_test->code,v) << BIT);
+
+				BIT -- ;
 				v++;
+				printf("%d \n",BIT);
+				if(BIT<0){
+					BIT=7;
+					f++;
+				}
 			}
 			k += noeud_test->tailleCode;
+			printf("\n");
 		}
-		printf("\n");
+}
 
